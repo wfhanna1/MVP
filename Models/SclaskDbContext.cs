@@ -15,6 +15,7 @@ namespace sclask.Models
     }
 
     public DbSet<Player> Players { get; set; }
+    public DbSet<Match> Matches { get; set; }
     public DbSet<Game> Games { get; set; }
   }
 }
