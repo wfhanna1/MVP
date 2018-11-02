@@ -10,6 +10,5 @@ namespace sclask.Models
     public string FullName { get; set; }
     [EmailAddress]
     public string EmailAddress { get; set; }
-    public float Rating { get; set; }
   }
 }
