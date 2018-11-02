@@ -8,62 +8,62 @@ using sclask.Models;
 namespace sclask.Controllers
 {
   [Route("api/[controller]")]
-  public class GamesController : Controller
+  public class MatchesController : Controller
   {
     private readonly SclaskDbContext _appContext;
 
-    public GamesController(SclaskDbContext appDbContext)
+    public MatchesController(SclaskDbContext appDbContext)
     {
       this._appContext = appDbContext;
     }
 
     [HttpGet]
-    public ActionResult<ICollection<Player>> Index()
+    public ActionResult<ICollection<Match>> Index()
     {
-      var games = this._appContext.Games.ToList();
+      var matches = this._appContext.Matches.ToList();
 
-      if (games == null)
+      if (matches == null)
       {
         return NotFound();
       }
 
-      return Ok(games);
+      return Ok(matches);
     }
 
-    [HttpGet("{id}", Name = "GetGame")]
-    public ActionResult<Game> GetGame(int id)
+    [HttpGet("{id}", Name = "GetMatch")]
+    public ActionResult<Match> GetMatch(int id)
     {
-      Game game = this._appContext.Games
+      Match match = this._appContext.Matches
         .Where(d => d.Id == id)
         .FirstOrDefault();
 
-      if (game == null)
+      if (match == null)
       {
         return NotFound();
       }
 
-      return game;
+      return match;
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] Game gameModel)
+    public IActionResult Update(int id, [FromBody] Match matchModel)
     {
-      var game = this._appContext.Games.Find(id);
-      if (game == null)
+      var match = this._appContext.Matches.Find(id);
+      if (match == null)
       {
         return NotFound();
       }
 
-      gameModel.Id = id;
+      matchModel.Id = id;
 
-      this._appContext.Update(gameModel);
+      this._appContext.Update(matchModel);
       this._appContext.SaveChanges();
 
       return NoContent();
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody] Game game)
+    public IActionResult Create([FromBody] Match match)
     {
       if (!ModelState.IsValid)
       {
@@ -72,9 +72,9 @@ namespace sclask.Controllers
 
       try 
       {
-        this._appContext.Add(game);
+        this._appContext.Add(match);
         this._appContext.SaveChanges();
-        return CreatedAtRoute("GetGame", new { id = game.Id }, game);
+        return CreatedAtRoute("GetMatch", new { id = match.Id }, match);
       }
       catch (Exception e)
       {
