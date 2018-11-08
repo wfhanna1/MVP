@@ -22,11 +22,6 @@ namespace sclask.Controllers
     {
       var players = this._appContext.Players.ToList();
 
-      if (players == null)
-      {
-        return NotFound();
-      }
-
       return Ok(players);
     }
 
@@ -45,6 +40,21 @@ namespace sclask.Controllers
       return player;
     }
 
+    [HttpGet("find")]
+    public ActionResult<List<Player>> Search(string q)
+    {
+      if (q == null)
+      {
+        return new List<Player>();
+      }
+      q = q.ToLower();
+      var results = this._appContext.Players
+        .Where(p => p.EmailAddress.ToLower().Contains(q) || p.FullName.ToLower().Contains(q))
+        .ToList();
+
+      return results;
+    }
+
     [HttpPut("{id}")]
     public IActionResult Update(int id, [FromBody] Player playerModel)
     {
@@ -54,9 +64,11 @@ namespace sclask.Controllers
         return NotFound();
       }
 
-      playerModel.Id = id;
+      player.EmailAddress = playerModel.EmailAddress;
+      player.FullName = playerModel.FullName;
+      player.ProfilePhoto = playerModel.ProfilePhoto;
 
-      this._appContext.Update(playerModel);
+      this._appContext.Update(player);
       this._appContext.SaveChanges();
 
       return NoContent();

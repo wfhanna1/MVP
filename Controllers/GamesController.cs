@@ -20,12 +20,7 @@ namespace sclask.Controllers
     [HttpGet]
     public ActionResult<ICollection<Game>> Index()
     {
-      var games = this._appContext.Matches.ToList();
-
-      if (games == null)
-      {
-        return NotFound();
-      }
+      var games = this._appContext.Games.ToList();
 
       return Ok(games);
     }
@@ -48,15 +43,16 @@ namespace sclask.Controllers
     [HttpPut("{id}")]
     public IActionResult Update(int id, [FromBody] Game gameModel)
     {
-      var game = this._appContext.Matches.Find(id);
+      var game = this._appContext.Games.Find(id);
       if (game == null)
       {
         return NotFound();
       }
 
-      gameModel.Id = id;
+      game.Name = gameModel.Name;
+      game.KFactor = gameModel.KFactor;
 
-      this._appContext.Update(gameModel);
+      this._appContext.Update(game);
       this._appContext.SaveChanges();
 
       return NoContent();
@@ -70,7 +66,7 @@ namespace sclask.Controllers
         return BadRequest();
       }
 
-      try 
+      try
       {
         this._appContext.Add(game);
         this._appContext.SaveChanges();

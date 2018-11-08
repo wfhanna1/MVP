@@ -14,10 +14,13 @@ namespace sclask.Models
     public int PlayerBId { get; set; }
     public Player PlayerB { get; set; }
     public float PlayerAPrediction { get; set; }
-    public float PlayerBPrediciton { get; set; }
+    public float PlayerBPredicition { get; set; }
     [Required]
     public int WinnerId { get; set; }
     public Player Winner { get; set; }
+    [Required]
+    public int GameId { get; set; }
+    public Game Game { get; set; }
     public DateTime Date { get; set; }
-  }    
+  }
 }

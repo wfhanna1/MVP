@@ -10,5 +10,6 @@ namespace sclask.Models
     public int PlayerId { get; set; }
     public Game Game { get; set; }
     public int GameId { get; set; }
+    public float Score { get; set; }
   }
 }

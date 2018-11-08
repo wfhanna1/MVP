@@ -14,6 +14,5 @@ namespace sclask.Models
     public string EmailAddress { get; set; }
     [Url]
     public string ProfilePhoto { get; set; }
-    public float Rating { get; set; }
   }
 }
