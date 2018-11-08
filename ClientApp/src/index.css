@@ -1,4 +1,7 @@
-html, body {
-    padding: 0;
-    margin: 0;
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700");
+
+html,
+body {
+  padding: 0;
+  margin: 0;
 }
