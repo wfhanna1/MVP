@@ -8,7 +8,6 @@ COPY *.csproj .
 RUN dotnet restore
 
 COPY ./ ./
-COPY nginx.conf.sigil .
 
 RUN dotnet publish "./secretmenu.csproj" --output "./dist" --configuration Release --no-restore
 
