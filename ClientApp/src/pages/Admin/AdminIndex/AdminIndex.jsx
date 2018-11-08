@@ -37,8 +37,8 @@ export class AdminIndex extends Component {
             </SecondaryLink>
           </ListItem>
           <ListItem>
-            <SecondaryLink to="/admin/player" inverted="true">
-              Add Player
+            <SecondaryLink to="/" inverted="true">
+              Back
             </SecondaryLink>
           </ListItem>
         </AdminIndexLinkList>
