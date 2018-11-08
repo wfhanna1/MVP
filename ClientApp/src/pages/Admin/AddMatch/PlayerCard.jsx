@@ -121,7 +121,10 @@ export class PlayerCard extends Component {
     return (
       <PlayerCardWrapper>
         <PlayerProfilePicture>
-          <ProfilePicture src={this.props.player.profilePhoto} />
+          <ProfilePicture
+            src={this.props.player.profilePhoto}
+            selected={this.props.isWinner}
+          />
         </PlayerProfilePicture>
         <PlayerText>
           <PlayerTitle>{this.props.player.fullName}</PlayerTitle>
