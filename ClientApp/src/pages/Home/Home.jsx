@@ -9,6 +9,7 @@ import { GameService } from "../../services/GameService";
 import { MatchService } from "../../services/MatchService";
 import { RatingService } from "../../services/RatingService";
 import { LoadingOverlay } from "../../components/LoadingOverlay";
+import { SecondaryA } from "../../components/Actions/Secondary";
 
 const HomeContent = styled.div`
   width: 100%;
@@ -26,6 +27,23 @@ const HomeContent = styled.div`
     & * {
       max-width: 250px;
     }
+  }
+`;
+
+const HomeProvideFeedback = styled.div`
+  display: none;
+  font-family: Open Sans;
+  font-size: 14px;
+  color: gray;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  text-align: right;
+  background-color: rgba(255, 255, 255, 1);
+  padding: 5px 10px;
+
+  @media (min-width: 700px) {
+    display: block;
   }
 `;
 
@@ -80,6 +98,15 @@ export class Home extends Component {
         <HomeHeader />
         <HomeContent>
           <LoadingOverlay visible={this.state.loading} />
+          <HomeProvideFeedback>
+            Give suggestions on{" "}
+            <SecondaryA
+              href="https://www.notion.so/Sclask-Roadmap-064b1268637d434b85816ec89b1b999e"
+              inverted="true"
+            >
+              Notion
+            </SecondaryA>
+          </HomeProvideFeedback>
           <HomeList
             items={this.state.recentGames}
             renderer={this.renderGame}
