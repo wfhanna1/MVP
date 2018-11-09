@@ -13,7 +13,7 @@ dotnet ef database update
 ### Recommended tools
 * pgAdmin: Query against the database
 * VSCode: The best code editor ever
-** C# extension from Microsoft
-** Debugger for Chrome extension from Microsoft
-** GitLens extension
-** Prettier extension
+  * C# extension from Microsoft
+  * Debugger for Chrome extension from Microsoft
+  * GitLens extension
+  * Prettier extension
