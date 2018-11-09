@@ -33,6 +33,7 @@ export const TextInput = styled.input`
   color: #2e2e2e;
   padding: 6px 0px;
   border-style: none none solid none;
+  border-radius: 0;
   border-bottom: 2px solid #969696;
   width: 100%;
   transition: all 0.2s;
@@ -55,6 +56,7 @@ export const SelectInput = styled.select`
   color: #2e2e2e;
   padding: 6px 0px;
   border-style: none none solid none;
+  border-radius: 0;
   border-bottom: 2px solid #969696;
   width: 100%;
   transition: all 0.2s;
