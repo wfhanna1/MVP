@@ -114,7 +114,7 @@ namespace sclask.Controllers
       match = MatchServices.SetPredicitions(match, ratings);
       var updatedRatings = MatchServices.UpdateRatings(match, ratings);
 
-      var playerARating = ratings.Find(r => r.PlayerId == match.PlayerAId);
+      var playerARating = ratings.Find(r => r.PlayerId == match.PlayerAId && r.GameId == match.GameId);
       var playerAUpdatedRating = updatedRatings.Find(r => r.PlayerId == match.PlayerAId);
       if (playerARating != null)
       {
@@ -126,7 +126,7 @@ namespace sclask.Controllers
         this._appContext.Ratings.Add(playerAUpdatedRating);
       }
 
-      var playerBRating = ratings.Find(r => r.PlayerId == match.PlayerBId);
+      var playerBRating = ratings.Find(r => r.PlayerId == match.PlayerBId && r.GameId == match.GameId);
       var playerBUpdatedRating = updatedRatings.Find(r => r.PlayerId == match.PlayerBId);
       if (playerBRating != null)
       {
