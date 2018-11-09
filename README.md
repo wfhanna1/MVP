@@ -1,4 +1,4 @@
-# Sclask
+# Sclask (https://sclask.me)
 Office game score keeping app
 
 ## Environment setup
