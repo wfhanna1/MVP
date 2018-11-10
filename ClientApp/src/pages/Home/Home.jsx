@@ -22,10 +22,13 @@ const HomeContent = styled.div`
     max-width: 1200px;
     margin: 0 auto;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
 
     & * {
       max-width: 250px;
+    }
+    & ul:first-of-type {
+      margin-right: 100px;
     }
   }
 `;
