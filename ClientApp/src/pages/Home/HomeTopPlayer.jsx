@@ -8,6 +8,7 @@ const HomeTopPlayerWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  box-sizing: border-box;
 
   @media (min-width: 700px) {
     padding: 0px;
