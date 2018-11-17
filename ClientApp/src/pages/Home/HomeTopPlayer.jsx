@@ -61,7 +61,10 @@ export class HomeTopPlayer extends Component {
     return (
       <HomeTopPlayerWrapper>
         <TopPlayerProfilePicture>
-          <ProfilePicture src={this.props.player.profilePhoto} />
+          <ProfilePicture
+            src={this.props.player.profilePhoto}
+            name={this.props.player.fullName}
+          />
         </TopPlayerProfilePicture>
         <TopPlayerText>
           <TextPoints>
