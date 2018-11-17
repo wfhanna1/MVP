@@ -4,6 +4,7 @@ import { TextInput, Label } from "../../../components/Form/Inputs";
 import { PlayerService } from "../../../services/PlayerService";
 import { PlayerCard } from "./PlayerCard";
 import { Player } from "../../../models/Player";
+import { AddPlayerCard } from "./AddPlayerCard";
 
 const PlayerSearchWrapper = styled.div``;
 
@@ -54,7 +55,7 @@ export class PlayerSearch extends Component {
     );
 
     this.setState({
-      players: results.length > 3 ? results.slize(0, 2) : results
+      players: results.length > 3 ? results.slice(0, 2) : results
     });
   }
 
@@ -64,6 +65,15 @@ export class PlayerSearch extends Component {
         <PlayerCard player={p} />
       </SearchResult>
     ));
+
+  renderAddPlayerLink = () =>
+    this.state.query.trim().length > 0 ? (
+      <SearchResult onClick={e => this.props.onAddPlayer(this.state.query)}>
+        <AddPlayerCard />
+      </SearchResult>
+    ) : (
+      ""
+    );
 
   onSelect = (e, player) => {
     e.preventDefault();
@@ -84,7 +94,10 @@ export class PlayerSearch extends Component {
           onChange={e => this.search(e.target.value)}
           placeholder="Search by name or email address..."
         />
-        <PlayerSearchResuts>{this.renderPlayers()}</PlayerSearchResuts>
+        <PlayerSearchResuts>
+          {this.renderPlayers()}
+          {this.renderAddPlayerLink()}
+        </PlayerSearchResuts>
       </PlayerSearchWrapper>
     );
   }

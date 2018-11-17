@@ -71,6 +71,15 @@ export class AddMatch extends Component {
     });
   }
 
+  onAddPlayer = query =>
+    this.props.history.push({
+      pathname: "/admin/player",
+      state: {
+        name: query,
+        redirect: "/admin/match"
+      }
+    });
+
   onChange(key, value) {
     this.setState({
       [key]: value
@@ -183,6 +192,7 @@ export class AddMatch extends Component {
           games={this.state.games}
           onChange={this.onChange}
           predicitions={this.state.predicitions}
+          onAddPlayer={e => this.onAddPlayer(e)}
         />
         <AddMatchActions>
           <div>
