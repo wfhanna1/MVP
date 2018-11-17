@@ -18,6 +18,7 @@ const ProfilePictureWrapper = styled.div`
   font-size: 30px;
   font-family: "Open Sans";
   font-weight: bold;
+  z-index: 1;
 `;
 
 const ProfilePictureImage = styled.div`
