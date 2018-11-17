@@ -67,6 +67,7 @@ export class AddMatchForm extends Component {
           <PlayerSearch
             selectedPlayers={this.props.state.selectedPlayers}
             onSelect={e => this.onPlayerSelected(e)}
+            onAddPlayer={e => this.props.onAddPlayer(e)}
           />
         )}
       </AddMatchFormWrapper>
