@@ -67,9 +67,16 @@ export class HomeRecentGame extends Component {
   render() {
     return (
       <HomeRecentGameWrapper>
-        <ProfilePicture src={this.getLoser().profilePhoto} />
+        <ProfilePicture
+          src={this.getLoser().profilePhoto}
+          name={this.getLoser().fullName}
+        />
         <RecentGameWinnerProfilePhoto>
-          <ProfilePicture src={this.getWinner().profilePhoto} selected="true" />
+          <ProfilePicture
+            src={this.getWinner().profilePhoto}
+            name={this.getWinner().fullName}
+            selected="true"
+          />
         </RecentGameWinnerProfilePhoto>
         <RecentGameText>
           <TextGameTitle>{this.props.game.name}</TextGameTitle>

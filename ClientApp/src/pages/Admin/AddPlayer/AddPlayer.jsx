@@ -41,7 +41,7 @@ export class AddPlayer extends Component {
 
     this.state = {
       loading: false,
-      fullName: props.location.state.name || "",
+      fullName: props.location.state ? props.location.state.name || "" : "",
       emailAddress: "",
       profilePhoto: ""
     };
@@ -95,7 +95,11 @@ export class AddPlayer extends Component {
 
     try {
       await this.playerService.create(player);
-      this.props.history.push(this.props.location.state.redirect || "/");
+      this.props.history.push(
+        this.props.location.state
+          ? this.props.location.state.redirect || "/"
+          : "/"
+      );
       return;
     } catch (e) {
       alert(`An error has occurred, please try again later`);
@@ -122,7 +126,11 @@ export class AddPlayer extends Component {
           <div>
             <SecondaryLink
               inverted="true"
-              to={this.props.location.state.redirect || "/"}
+              to={
+                this.props.location.state
+                  ? this.props.location.state.redirect || "/"
+                  : ""
+              }
             >
               Cancel
             </SecondaryLink>

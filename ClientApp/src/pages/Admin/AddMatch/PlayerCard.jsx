@@ -124,6 +124,7 @@ export class PlayerCard extends Component {
           <ProfilePicture
             src={this.props.player.profilePhoto}
             selected={this.props.isWinner}
+            name={this.props.player.fullName}
           />
         </PlayerProfilePicture>
         <PlayerText>
