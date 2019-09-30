@@ -4,14 +4,11 @@ trigger:
 pool:
   vmImage: 'Ubuntu-16.04'
 
-variables:
-  imageName: 'sclask-app'
-
 steps:
 - task: Docker@2
   inputs:
     containerRegistry: 'SclaskContainerRegistr'
-    repository: 'sclask'
+    repository: $(imageName)
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
     tags: |
