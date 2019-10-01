@@ -7,7 +7,7 @@ pool:
 steps:
 - task: Docker@2
   inputs:
-    containerRegistry: 'SclaskContainerRegistr'
+    containerRegistry: 'SclaskContainerRegistry'
     repository: $(imageName)
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
