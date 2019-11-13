@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using sclask.Models;
 using Microsoft.OpenApi.Models;
+using sclask.Managers;
 
 namespace sclask
 {
@@ -35,6 +36,8 @@ namespace sclask
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddTransient<IMatchesManager, MatchesManager>();
 
             //Register the Swagger generator
             services.AddSwaggerGen(c => 

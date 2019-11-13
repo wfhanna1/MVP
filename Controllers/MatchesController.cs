@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using sclask.DTO;
+using sclask.Managers;
 using sclask.Models;
 using sclask.Services;
 
@@ -12,10 +14,12 @@ namespace sclask.Controllers
   public class MatchesController : Controller
   {
     private readonly SclaskDbContext _appContext;
+    private readonly IMatchesManager _matchesManager;
 
-    public MatchesController(SclaskDbContext appDbContext)
+    public MatchesController(SclaskDbContext appDbContext, IMatchesManager matchesManager)
     {
-      this._appContext = appDbContext;
+      _appContext = appDbContext;
+      _matchesManager = matchesManager;
     }
 
     [HttpGet]
@@ -148,6 +152,18 @@ namespace sclask.Controllers
       {
         return BadRequest();
       }
+    }
+    
+    [Route("multiplayer")]
+    [HttpPost]
+    public IActionResult RecordMultiPlayerGame([FromBody] MultiPlayerMatchRequest payload)
+    {
+      if (!ModelState.IsValid || payload == null)
+      {
+        return BadRequest("Unacceptable payload");
+      }
+
+      return _matchesManager.RecordMultiPlayerGame(payload) ? (IActionResult) Ok() : BadRequest();
     }
   }
 }
