@@ -40,10 +40,21 @@ namespace sclask.Managers
             var losingTeam = new List<Rating>();
             float winningTeamScore = 0;
             float losingTeamScore = 0;
+            
+            //create the match because we need the match id for later use
+            var match = new Match()
+            {
+                GameId = payload.GameId,
+                Date = new DateTime()
+            };
+            _dbContext.Matches.Add(match);
+            _dbContext.SaveChanges();
+
+            var multiPlayerTable = new List<MultiPlayerMatch>();
       
             foreach (var player in payload.Players)
             {
-                var currentPlayer = _dbContext.Ratings.FirstOrDefault(p => p.Id == player.PlayerId && p.GameId == payload.GameId);
+                var currentPlayer = _dbContext.Ratings.FirstOrDefault(p => p.PlayerId == player.PlayerId && p.GameId == payload.GameId);
                 //Player never played this game before
                 if (currentPlayer == null)
                 {
@@ -61,7 +72,16 @@ namespace sclask.Managers
                     losingTeam.Add(currentPlayer);
                     losingTeamScore += currentPlayer.Score;
                 }
+
+                var multiPlayObject = new MultiPlayerMatch()
+                {
+                    MatchId = match.Id,
+                    PlayerId = player.PlayerId,
+                    IsWinner = player.IsWinner
+                };
+                multiPlayerTable.Add(multiPlayObject);
             }
+            
             //Average team score
             if (winningTeam.Any())
             {
@@ -84,14 +104,16 @@ namespace sclask.Managers
             var newScores = _matchService.CalculateNewEloScore(Convert.ToDecimal(winningTeamScore), Convert.ToDecimal(losingTeamScore), payload.GameId, kFactor);
             foreach (var player in winningTeam)
             {
-                player.Score = float.Parse(newScores.WinningNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+                var pointsDifference = Math.Abs(float.Parse(newScores.WinningNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat) - player.Score);
+                player.Score += pointsDifference;
             }
             foreach (var player in losingTeam)
             {
-                player.Score = float.Parse(newScores.LosingNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+                var pointsDifference = Math.Abs(player.Score - float.Parse(newScores.LosingNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat));
+                player.Score -= pointsDifference;
             }
-            
-            var match = new Match();
+
+            await _dbContext.MultiPlayerMatches.AddRangeAsync(multiPlayerTable);
             await _dbContext.SaveChangesAsync();
         }
     }
