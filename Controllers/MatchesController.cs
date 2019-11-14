@@ -33,19 +33,19 @@ namespace sclask.Controllers
       return Ok(matches);
     }
 
-//    [HttpGet("recent")]
-//    public ActionResult<ICollection<Match>> Recent()
-//    {
-//      var matches = this._appContext.Matches
-//        .Include(r => r.PlayerA)
-//        .Include(r => r.PlayerB)
-//        .Include(r => r.Game)
-//        .OrderByDescending(r => r.Date)
-//        .Take(5)
-//        .ToList();
-//
-//      return Ok(matches);
-//    }
+    [HttpGet("recent")]
+    public ActionResult<ICollection<Match>> Recent()
+    {
+      var matches = _appContext.MultiPlayerMatches
+        .Include(r => r.Player)
+        .Include(r => r.Match)
+        .Include(r => r.Match.Game)
+        .OrderByDescending(r => r.Match.Date)
+        .Take(5)
+        .ToList();
+
+      return Ok(matches);
+    }
 
     [HttpGet("{id}", Name = "GetMatch")]
     public ActionResult<Match> GetMatch(int id)

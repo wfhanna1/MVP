@@ -25,27 +25,27 @@ namespace sclask.Controllers
       return Ok(ratings);
     }
 
-//    [HttpGet("topPlayers")]
-//    public ActionResult<ICollection<Rating>> TopRatingsByPlayer()
-//    {
-//      var ratings = this._appContext.Ratings
-//        .Include(r => r.Player)
-//        .GroupBy(r => new { PlayerId = r.PlayerId })
-//        .Select(
-//          g => new
-//          {
-//            Average = g.Average(p => p.Score),
-//            Id = g.Key.PlayerId,
-//            Player = g.Select(p => p.Player),
-//            Games = this._appContext.Matches.Count(t => t.PlayerAId == g.Key.PlayerId || t.PlayerBId == g.Key.PlayerId)
-//          }
-//        )
-//        .OrderByDescending(g => g.Average)
-//        .Take(5)
-//        .ToList();
-//
-//      return Ok(ratings);
-//    }
+    [HttpGet("topPlayers")]
+    public ActionResult<ICollection<Rating>> TopRatingsByPlayer()
+    {
+      var ratings = this._appContext.Ratings
+        .Include(r => r.Player)
+        .GroupBy(r => new { PlayerId = r.PlayerId })
+        .Select(
+          g => new
+          {
+            Average = g.Average(p => p.Score),
+            Id = g.Key.PlayerId,
+            Player = g.Select(p => p.Player),
+            Games = _appContext.MultiPlayerMatches.Count(t => t.PlayerId == g.Key.PlayerId)
+          }
+        )
+        .OrderByDescending(g => g.Average)
+        .Take(5)
+        .ToList();
+
+      return Ok(ratings);
+    }
 
     [HttpGet("{id}", Name = "GetRating")]
     public ActionResult<Rating> GetRating(int id)
