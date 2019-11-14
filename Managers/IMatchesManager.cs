@@ -1,9 +1,11 @@
+using System.Threading.Tasks;
 using sclask.DTO;
 
 namespace sclask.Managers
 {
     public interface IMatchesManager
     {
-        bool RecordMultiPlayerGame(MultiPlayerMatchRequest payload);
+        bool ValidatePayload(MultiPlayerMatchRequest payload);
+        Task RecordMultiPlayerGame(MultiPlayerMatchRequest payload);
     }
 }

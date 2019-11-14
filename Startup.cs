@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using sclask.Models;
 using Microsoft.OpenApi.Models;
 using sclask.Managers;
+using sclask.Services;
 
 namespace sclask
 {
@@ -38,6 +39,7 @@ namespace sclask
             });
 
             services.AddTransient<IMatchesManager, MatchesManager>();
+            services.AddTransient<IMatchService, MatchServices>();
 
             //Register the Swagger generator
             services.AddSwaggerGen(c => 

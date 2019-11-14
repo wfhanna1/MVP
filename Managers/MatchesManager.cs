@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using sclask.DTO;
 using sclask.Models;
 using sclask.Services;
@@ -9,13 +12,15 @@ namespace sclask.Managers
     public class MatchesManager : IMatchesManager
     {
         private readonly SclaskDbContext _dbContext;
+        private readonly IMatchService _matchService;
 
-        public MatchesManager(SclaskDbContext dbContext)
+        public MatchesManager(SclaskDbContext dbContext, IMatchService matchService)
         {
             _dbContext = dbContext;
+            _matchService = matchService;
         }
-        
-        public bool RecordMultiPlayerGame(MultiPlayerMatchRequest payload)
+
+        public bool ValidatePayload(MultiPlayerMatchRequest payload)
         {
             var game = _dbContext.Games.FirstOrDefault(g => g.Id == payload.GameId);
             if (game == null)
@@ -27,49 +32,67 @@ namespace sclask.Managers
                 return false;
             }
 
+            return true;
+        }
+        public async Task RecordMultiPlayerGame(MultiPlayerMatchRequest payload)
+        {
+            var winningTeam = new List<Rating>();
+            var losingTeam = new List<Rating>();
+            float winningTeamScore = 0;
+            float losingTeamScore = 0;
+      
+            foreach (var player in payload.Players)
+            {
+                var currentPlayer = _dbContext.Ratings.FirstOrDefault(p => p.Id == player.PlayerId && p.GameId == payload.GameId);
+                //Player never played this game before
+                if (currentPlayer == null)
+                {
+                    currentPlayer = new Rating {PlayerId = player.PlayerId, Score = 2400, GameId = payload.GameId};
+                    _dbContext.Ratings.Add(currentPlayer);
+                    _dbContext.SaveChanges();
+                }
+                if (player.IsWinner)
+                {
+                    winningTeam.Add(currentPlayer);
+                    winningTeamScore += currentPlayer.Score;
+                }
+                else
+                {
+                    losingTeam.Add(currentPlayer);
+                    losingTeamScore += currentPlayer.Score;
+                }
+            }
+            //Average team score
+            if (winningTeam.Any())
+            {
+                winningTeamScore = winningTeamScore / winningTeam.Count;
+            }
+            else
+            {
+                winningTeamScore = 0;
+            }
+            if (losingTeam.Any())
+            {
+                losingTeamScore = losingTeamScore / losingTeam.Count;
+            }
+            else
+            {
+                losingTeamScore = 0;
+            }
+
+            var kFactor = _dbContext.Games.First(g => g.Id == payload.GameId).KFactor;
+            var newScores = _matchService.CalculateNewEloScore(Convert.ToDecimal(winningTeamScore), Convert.ToDecimal(losingTeamScore), payload.GameId, kFactor);
+            foreach (var player in winningTeam)
+            {
+                player.Score = float.Parse(newScores.WinningNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+            }
+            foreach (var player in losingTeam)
+            {
+                player.Score = float.Parse(newScores.LosingNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+            }
+            
             var match = new Match();
-            match.Date = DateTime.Now;
-
-            var ratings = _dbContext.Ratings.Where(r => r.PlayerId == match.PlayerAId || r.PlayerId == match.PlayerBId).ToList();
-
-            match = MatchServices.SetPredicitions(match, ratings);
-            var updatedRatings = MatchServices.UpdateRatings(match, ratings);
-
-            var playerARating = ratings.Find(r => r.PlayerId == match.PlayerAId && r.GameId == match.GameId);
-            var playerAUpdatedRating = updatedRatings.Find(r => r.PlayerId == match.PlayerAId);
-            if (playerARating != null)
-            {
-                playerARating.Score = playerAUpdatedRating.Score;
-                _dbContext.Ratings.Update(playerARating);
-            }
-            else
-            {
-                _dbContext.Ratings.Add(playerAUpdatedRating);
-            }
-
-            var playerBRating = ratings.Find(r => r.PlayerId == match.PlayerBId && r.GameId == match.GameId);
-            var playerBUpdatedRating = updatedRatings.Find(r => r.PlayerId == match.PlayerBId);
-            if (playerBRating != null)
-            {
-                playerBRating.Score = playerBUpdatedRating.Score;
-                _dbContext.Ratings.Update(playerBRating);
-            }
-            else
-            {
-                _dbContext.Ratings.Add(playerBUpdatedRating);
-            }
-
-            try
-            {
-                _dbContext.Add(match);
-                _dbContext.SaveChanges();
-                return true;
-            }
-            catch
-            {
-            }
-
-            return false;
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

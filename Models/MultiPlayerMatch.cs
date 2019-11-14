@@ -18,5 +18,7 @@ namespace sclask.Models
         public bool IsWinner { get; set; }
         
         public Match Match { get; set; }
+        
+        public Player Player { get; set; }
     }
 }
