@@ -37,7 +37,7 @@ namespace sclask.Controllers
             Average = g.Average(p => p.Score),
             Id = g.Key.PlayerId,
             Player = g.Select(p => p.Player),
-            Games = this._appContext.Matches.Count(t => t.PlayerAId == g.Key.PlayerId || t.PlayerBId == g.Key.PlayerId)
+            Games = _appContext.MultiPlayerMatches.Count(t => t.PlayerId == g.Key.PlayerId)
           }
         )
         .OrderByDescending(g => g.Average)

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using sclask.Models;
@@ -9,9 +10,10 @@ using sclask.Models;
 namespace sclask.Migrations
 {
     [DbContext(typeof(SclaskDbContext))]
-    partial class SclaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191113234019_MultiPlayerMatchTable")]
+    partial class MultiPlayerMatchTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,9 +46,25 @@ namespace sclask.Migrations
 
                     b.Property<int>("GameId");
 
+                    b.Property<int>("PlayerAId");
+
+                    b.Property<float>("PlayerAPrediction");
+
+                    b.Property<int>("PlayerBId");
+
+                    b.Property<float>("PlayerBPredicition");
+
+                    b.Property<int>("WinnerId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GameId");
+
+                    b.HasIndex("PlayerAId");
+
+                    b.HasIndex("PlayerBId");
+
+                    b.HasIndex("WinnerId");
 
                     b.ToTable("Matches");
                 });
@@ -65,8 +83,6 @@ namespace sclask.Migrations
                     b.HasKey("MultiPlayerMatchId");
 
                     b.HasIndex("MatchId");
-
-                    b.HasIndex("PlayerId");
 
                     b.ToTable("MultiPlayerMatches");
                 });
@@ -119,6 +135,21 @@ namespace sclask.Migrations
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("sclask.Models.Player", "PlayerA")
+                        .WithMany()
+                        .HasForeignKey("PlayerAId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("sclask.Models.Player", "PlayerB")
+                        .WithMany()
+                        .HasForeignKey("PlayerBId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("sclask.Models.Player", "Winner")
+                        .WithMany()
+                        .HasForeignKey("WinnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("sclask.Models.MultiPlayerMatch", b =>
@@ -126,11 +157,6 @@ namespace sclask.Migrations
                     b.HasOne("sclask.Models.Match", "Match")
                         .WithMany()
                         .HasForeignKey("MatchId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("sclask.Models.Player", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
