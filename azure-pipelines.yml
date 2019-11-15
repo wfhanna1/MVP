@@ -2,6 +2,7 @@ trigger:
   branches:
     include:
     - master
+    - development
 
 variables:
   imageName: mvp-app
