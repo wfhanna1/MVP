@@ -4,7 +4,7 @@ trigger:
     - master
 
 variables:
-  imageName: mvp-app-prod
+  imageName: mvp-app
 
 pool:
   vmImage: 'Ubuntu-16.04'
