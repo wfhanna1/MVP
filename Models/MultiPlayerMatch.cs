@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Design.Internal;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace sclask.Models
 {
     public class MultiPlayerMatch
     {
+        [JsonProperty("id")]
         public int MultiPlayerMatchId { get; set; }
             
         [Required]
