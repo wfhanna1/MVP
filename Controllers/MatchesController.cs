@@ -169,7 +169,7 @@ namespace sclask.Controllers
       var validPayload = _matchesManager.ValidatePayload(payload);
       await _matchesManager.RecordMultiPlayerGame(payload);
 
-      return validPayload ? (IActionResult) Accepted() : BadRequest();
+      return validPayload ? (IActionResult) Accepted(true) : BadRequest(false);
     }
   }
 }
