@@ -45,7 +45,7 @@ namespace sclask.Managers
             var match = new Match()
             {
                 GameId = payload.GameId,
-                Date = new DateTime()
+                Date = DateTime.Now
             };
             _dbContext.Matches.Add(match);
             _dbContext.SaveChanges();
