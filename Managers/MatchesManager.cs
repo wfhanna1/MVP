@@ -34,7 +34,7 @@ namespace sclask.Managers
 
             return true;
         }
-        public async Task RecordMultiPlayerGame(MultiPlayerMatchRequest payload)
+        public async Task<int> RecordMultiPlayerGame(MultiPlayerMatchRequest payload)
         {
             var winningTeam = new List<Rating>();
             var losingTeam = new List<Rating>();
@@ -100,12 +100,14 @@ namespace sclask.Managers
                 losingTeamScore = 0;
             }
 
+            float playerScoreImpact=0;
             var kFactor = _dbContext.Games.First(g => g.Id == payload.GameId).KFactor;
             var newScores = _matchService.CalculateNewEloScore(Convert.ToDecimal(winningTeamScore), Convert.ToDecimal(losingTeamScore), payload.GameId, kFactor);
             foreach (var player in winningTeam)
             {
                 var pointsDifference = Math.Abs(float.Parse(newScores.WinningNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat) - player.Score);
                 player.Score += pointsDifference;
+                playerScoreImpact = pointsDifference;
             }
             foreach (var player in losingTeam)
             {
@@ -115,6 +117,7 @@ namespace sclask.Managers
 
             await _dbContext.MultiPlayerMatches.AddRangeAsync(multiPlayerTable);
             await _dbContext.SaveChangesAsync();
+            return (int) Math.Round(playerScoreImpact); 
         }
     }
 }

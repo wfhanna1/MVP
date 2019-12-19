@@ -6,6 +6,6 @@ namespace sclask.Managers
     public interface IMatchesManager
     {
         bool ValidatePayload(MultiPlayerMatchRequest payload);
-        Task RecordMultiPlayerGame(MultiPlayerMatchRequest payload);
+        Task<int> RecordMultiPlayerGame(MultiPlayerMatchRequest payload);
     }
 }
