@@ -58,7 +58,7 @@ namespace sclask.Managers
                 //Player never played this game before
                 if (currentPlayer == null)
                 {
-                    currentPlayer = new Rating {PlayerId = player.PlayerId, Score = 2400, GameId = payload.GameId};
+                    currentPlayer = new Rating {PlayerId = player.PlayerId, Score = 2400, GameId = payload.GameId, LastUpdateDate = DateTime.Now};
                     _dbContext.Ratings.Add(currentPlayer);
                     _dbContext.SaveChanges();
                 }
@@ -114,7 +114,7 @@ namespace sclask.Managers
                 var pointsDifference = Math.Abs(player.Score - float.Parse(newScores.LosingNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat));
                 player.Score -= pointsDifference;
             }
-
+    
             await _dbContext.MultiPlayerMatches.AddRangeAsync(multiPlayerTable);
             await _dbContext.SaveChangesAsync();
             return (int) Math.Round(playerScoreImpact); 

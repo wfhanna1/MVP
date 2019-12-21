@@ -23,5 +23,7 @@ namespace sclask.Models
         public Match Match { get; set; }
         
         public Player Player { get; set; }
+        
+        public DateTime LastUpdateDate { get; set; }
     }
 }
