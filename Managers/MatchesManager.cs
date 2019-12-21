@@ -79,6 +79,7 @@ namespace sclask.Managers
                     PlayerId = player.PlayerId,
                     IsWinner = player.IsWinner
                 };
+                multiPlayObject.LastUpdateDate = DateTime.Now;
                 multiPlayerTable.Add(multiPlayObject);
             }
             
@@ -107,14 +108,18 @@ namespace sclask.Managers
             {
                 var pointsDifference = Math.Abs(float.Parse(newScores.WinningNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat) - player.Score);
                 player.Score += pointsDifference;
+                player.LastUpdateDate = DateTime.Now;
                 playerScoreImpact = pointsDifference;
             }
             foreach (var player in losingTeam)
             {
                 var pointsDifference = Math.Abs(player.Score - float.Parse(newScores.LosingNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat));
                 player.Score -= pointsDifference;
+                player.LastUpdateDate = DateTime.Now;
             }
-    
+            
+            _dbContext.Ratings.UpdateRange(winningTeam);
+            _dbContext.Ratings.UpdateRange(losingTeam);
             await _dbContext.MultiPlayerMatches.AddRangeAsync(multiPlayerTable);
             await _dbContext.SaveChangesAsync();
             return (int) Math.Round(playerScoreImpact); 

@@ -161,18 +161,26 @@ namespace sclask.Controllers
     [HttpPost]
     public async Task<IActionResult> RecordMultiPlayerGame([FromBody] MultiPlayerMatchRequest payload)
     {
-      if (!ModelState.IsValid || payload == null)
+      try
       {
-        return BadRequest("Unacceptable payload");
-      }
+        if (!ModelState.IsValid || payload == null)
+        {
+          return BadRequest("Unacceptable payload");
+        }
 
-      var validPayload = _matchesManager.ValidatePayload(payload);
-      if(validPayload)
-      {
-        var scoreImpact = await _matchesManager.RecordMultiPlayerGame(payload);
-        return (IActionResult) Accepted(scoreImpact);
+        var validPayload = _matchesManager.ValidatePayload(payload);
+        if(validPayload)
+        {
+          var scoreImpact = await _matchesManager.RecordMultiPlayerGame(payload);
+          return (IActionResult) Accepted(scoreImpact);
+        }
+        return BadRequest(false);
       }
-      return BadRequest(false);
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+        throw;
+      }
     }
   }
 }

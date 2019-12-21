@@ -51,7 +51,8 @@ namespace sclask.Controllers
     public ActionResult<Rating> GetRating(int id)
     {
       Rating rating = this._appContext.Ratings
-        .Where(d => d.Id == id)
+        .Where(d => d.PlayerId == id)
+        .OrderByDescending(d => d.LastUpdateDate)
         .FirstOrDefault();
 
       if (rating == null)
