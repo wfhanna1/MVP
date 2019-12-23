@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using sclask.DTO;
 using sclask.Models;
 using sclask.Services;
@@ -123,6 +124,31 @@ namespace sclask.Managers
             await _dbContext.MultiPlayerMatches.AddRangeAsync(multiPlayerTable);
             await _dbContext.SaveChangesAsync();
             return (int) Math.Round(playerScoreImpact); 
+        }
+
+        public List<IGrouping<int,RecentMatches>> GetRecentMatches()
+        {
+            var matches =  _dbContext.Matches
+                .Include(g => g.Game)
+                .OrderByDescending(m => m.Date)
+                .Select(m => new RecentMatches(){
+                  MatchId = m.Id,
+                  GameId = m.GameId,
+                  GameName = m.Game.Name,
+                  Players = (from multimatches in _dbContext.MultiPlayerMatches
+                      where multimatches.MatchId == m.Id
+                      select new RecentPlayer()
+                      {
+                          PlayerId = multimatches.PlayerId,
+                          FullName = multimatches.Player.FullName,
+                          IsWinner = multimatches.IsWinner
+                      }).ToList()
+                })
+                .Take(10)
+                .GroupBy(m => m.MatchId)
+                .ToList();
+        
+            return matches;
         }
     }
 }

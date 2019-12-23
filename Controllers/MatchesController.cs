@@ -34,17 +34,18 @@ namespace sclask.Controllers
     }
 
     [HttpGet("recent")]
-    public ActionResult<ICollection<Match>> Recent()
+    public IActionResult Recent()
     {
-      var matches = _appContext.MultiPlayerMatches
-        .Include(r => r.Player)
-        .Include(r => r.Match)
-        .Include(r => r.Match.Game)
-        .OrderByDescending(r => r.Match.Date)
-        .Take(5)
-        .ToList();
-
-      return Ok(matches);
+      try
+      {
+        var matches =  _matchesManager.GetRecentMatches();
+        return matches == null ? (IActionResult) BadRequest() : Ok(matches);
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+        throw;
+      }
     }
 
     [HttpGet("{id}", Name = "GetMatch")]
