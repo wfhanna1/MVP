@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace sclask.DTO
@@ -7,6 +8,7 @@ namespace sclask.DTO
         public int MatchId { get; set; }
         public int GameId { get; set; }
         public string GameName { get; set; }
+        public DateTime GameDate { get; set; }
         public List<RecentPlayer> Players { get; set; }
     }
 

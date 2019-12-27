@@ -9,6 +9,6 @@ namespace sclask.Managers
     {
         bool ValidatePayload(MultiPlayerMatchRequest payload);
         Task<int> RecordMultiPlayerGame(MultiPlayerMatchRequest payload);
-        List<IGrouping<int,RecentMatches>> GetRecentMatches();
+        IQueryable<RecentMatches> GetRecentMatches();
     }
 }

@@ -126,27 +126,28 @@ namespace sclask.Managers
             return (int) Math.Round(playerScoreImpact); 
         }
 
-        public List<IGrouping<int,RecentMatches>> GetRecentMatches()
+        public IQueryable<RecentMatches> GetRecentMatches()
         {
-            var matches =  _dbContext.Matches
+            var matches = _dbContext.Matches
                 .Include(g => g.Game)
                 .OrderByDescending(m => m.Date)
-                .Select(m => new RecentMatches(){
-                  MatchId = m.Id,
-                  GameId = m.GameId,
-                  GameName = m.Game.Name,
-                  Players = (from multimatches in _dbContext.MultiPlayerMatches
-                      where multimatches.MatchId == m.Id
-                      select new RecentPlayer()
-                      {
-                          PlayerId = multimatches.PlayerId,
-                          FullName = multimatches.Player.FullName,
-                          IsWinner = multimatches.IsWinner
-                      }).ToList()
+                .Select(m => new RecentMatches()
+                {
+                    MatchId = m.Id,
+                    GameId = m.GameId,
+                    GameName = m.Game.Name,
+                    GameDate = m.Date,
+                    Players = (from multimatches in _dbContext.MultiPlayerMatches
+                        where multimatches.MatchId == m.Id
+                        select new RecentPlayer()
+                        {
+                            PlayerId = multimatches.PlayerId,
+                            FullName = multimatches.Player.FullName,
+                            IsWinner = multimatches.IsWinner
+                        }).ToList()
                 })
-                .Take(10)
-                .GroupBy(m => m.MatchId)
-                .ToList();
+                .Take(10);
+            //.GroupBy(m => m.MatchId);
         
             return matches;
         }
