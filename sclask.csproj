@@ -13,6 +13,7 @@
     <PackageReference Include="AWSSDK.Core " Version="3.3.28.1" />
     <PackageReference Include="AWSSDK.S3 " Version="3.3.26.1" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.6" />
+    <PackageReference Include="Kezyma.EloRating" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.1" />

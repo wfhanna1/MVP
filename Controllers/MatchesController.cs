@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using sclask.DTO;
+using sclask.Managers;
 using sclask.Models;
 using sclask.Services;
 
@@ -12,10 +15,14 @@ namespace sclask.Controllers
   public class MatchesController : Controller
   {
     private readonly SclaskDbContext _appContext;
+    private readonly IMatchesManager _matchesManager;
+    private readonly IMatchService _matchService;
 
-    public MatchesController(SclaskDbContext appDbContext)
+    public MatchesController(SclaskDbContext appDbContext, IMatchesManager matchesManager, IMatchService matchService)
     {
-      this._appContext = appDbContext;
+      _appContext = appDbContext;
+      _matchesManager = matchesManager;
+      _matchService = matchService;
     }
 
     [HttpGet]
@@ -27,17 +34,18 @@ namespace sclask.Controllers
     }
 
     [HttpGet("recent")]
-    public ActionResult<ICollection<Match>> Recent()
+    public IActionResult Recent()
     {
-      var matches = this._appContext.Matches
-        .Include(r => r.PlayerA)
-        .Include(r => r.PlayerB)
-        .Include(r => r.Game)
-        .OrderByDescending(r => r.Date)
-        .Take(5)
-        .ToList();
-
-      return Ok(matches);
+      try
+      {
+        var matches =  _matchesManager.GetRecentMatches();
+        return matches == null ? (IActionResult) BadRequest() : Ok(matches);
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+        throw;
+      }
     }
 
     [HttpGet("{id}", Name = "GetMatch")]
@@ -55,98 +63,124 @@ namespace sclask.Controllers
       return match;
     }
 
-    [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] Match matchModel)
-    {
-      var match = this._appContext.Matches.Find(id);
-      if (match == null)
-      {
-        return NotFound();
-      }
+//    [HttpPut("{id}")]
+//    public IActionResult Update(int id, [FromBody] Match matchModel)
+//    {
+//      var match = this._appContext.Matches.Find(id);
+//      if (match == null)
+//      {
+//        return NotFound();
+//      }
+//
+//      match.PlayerAId = matchModel.PlayerAId;
+//      match.PlayerBId = matchModel.PlayerBId;
+//      match.WinnerId = matchModel.WinnerId;
+//      match.PlayerAPrediction = matchModel.PlayerAPrediction;
+//      match.PlayerBPredicition = matchModel.PlayerBPredicition;
+//
+//      this._appContext.Update(match);
+//      this._appContext.SaveChanges();
+//
+//      return NoContent();
+//    }
+//
+//    [HttpPost]
+//    public IActionResult Create([FromBody] Match match)
+//    {
+//      if (!ModelState.IsValid)
+//      {
+//        return BadRequest();
+//      }
+//
+//      match.Game = this._appContext.Games.Find(match.GameId);
+//      if (match.Game == null)
+//      {
+//        return BadRequest();
+//      }
+//
+//      match.PlayerA = this._appContext.Players.Find(match.PlayerAId);
+//      if (match.PlayerA == null)
+//      {
+//        return BadRequest();
+//      }
+//
+//      match.PlayerB = this._appContext.Players.Find(match.PlayerBId);
+//      if (match.PlayerB == null)
+//      {
+//        return BadRequest();
+//      }
+//
+//      if (match.WinnerId != match.PlayerAId && match.WinnerId != match.PlayerBId)
+//      {
+//        return BadRequest();
+//      }
+//
+//      match.Date = DateTime.Now;
+//
+//      var ratings = this._appContext.Ratings.Where(r => r.PlayerId == match.PlayerAId || r.PlayerId == match.PlayerBId).ToList();
+//
+//      match = _matchService.SetPredicitions(match, ratings);
+//      var updatedRatings = _matchService.UpdateRatings(match, ratings);
+//
+//      var playerARating = ratings.Find(r => r.PlayerId == match.PlayerAId && r.GameId == match.GameId);
+//      var playerAUpdatedRating = updatedRatings.Find(r => r.PlayerId == match.PlayerAId);
+//      if (playerARating != null)
+//      {
+//        playerARating.Score = playerAUpdatedRating.Score;
+//        this._appContext.Ratings.Update(playerARating);
+//      }
+//      else
+//      {
+//        this._appContext.Ratings.Add(playerAUpdatedRating);
+//      }
+//
+//      var playerBRating = ratings.Find(r => r.PlayerId == match.PlayerBId && r.GameId == match.GameId);
+//      var playerBUpdatedRating = updatedRatings.Find(r => r.PlayerId == match.PlayerBId);
+//      if (playerBRating != null)
+//      {
+//        playerBRating.Score = playerBUpdatedRating.Score;
+//        this._appContext.Ratings.Update(playerBRating);
+//      }
+//      else
+//      {
+//        this._appContext.Ratings.Add(playerBUpdatedRating);
+//      }
+//
+//      try
+//      {
+//        this._appContext.Add(match);
+//        this._appContext.SaveChanges();
+//        return CreatedAtRoute("GetMatch", new { id = match.Id }, match);
+//      }
+//      catch (Exception e)
+//      {
+//        return BadRequest();
+//      }
+//    }
 
-      match.PlayerAId = matchModel.PlayerAId;
-      match.PlayerBId = matchModel.PlayerBId;
-      match.WinnerId = matchModel.WinnerId;
-      match.PlayerAPrediction = matchModel.PlayerAPrediction;
-      match.PlayerBPredicition = matchModel.PlayerBPredicition;
-
-      this._appContext.Update(match);
-      this._appContext.SaveChanges();
-
-      return NoContent();
-    }
-
+    [Route("multiplayer")]
     [HttpPost]
-    public IActionResult Create([FromBody] Match match)
+    public async Task<IActionResult> RecordMultiPlayerGame([FromBody] MultiPlayerMatchRequest payload)
     {
-      if (!ModelState.IsValid)
-      {
-        return BadRequest();
-      }
-
-      match.Game = this._appContext.Games.Find(match.GameId);
-      if (match.Game == null)
-      {
-        return BadRequest();
-      }
-
-      match.PlayerA = this._appContext.Players.Find(match.PlayerAId);
-      if (match.PlayerA == null)
-      {
-        return BadRequest();
-      }
-
-      match.PlayerB = this._appContext.Players.Find(match.PlayerBId);
-      if (match.PlayerB == null)
-      {
-        return BadRequest();
-      }
-
-      if (match.WinnerId != match.PlayerAId && match.WinnerId != match.PlayerBId)
-      {
-        return BadRequest();
-      }
-
-      match.Date = DateTime.Now;
-
-      var ratings = this._appContext.Ratings.Where(r => r.PlayerId == match.PlayerAId || r.PlayerId == match.PlayerBId).ToList();
-
-      match = MatchServices.SetPredicitions(match, ratings);
-      var updatedRatings = MatchServices.UpdateRatings(match, ratings);
-
-      var playerARating = ratings.Find(r => r.PlayerId == match.PlayerAId && r.GameId == match.GameId);
-      var playerAUpdatedRating = updatedRatings.Find(r => r.PlayerId == match.PlayerAId);
-      if (playerARating != null)
-      {
-        playerARating.Score = playerAUpdatedRating.Score;
-        this._appContext.Ratings.Update(playerARating);
-      }
-      else
-      {
-        this._appContext.Ratings.Add(playerAUpdatedRating);
-      }
-
-      var playerBRating = ratings.Find(r => r.PlayerId == match.PlayerBId && r.GameId == match.GameId);
-      var playerBUpdatedRating = updatedRatings.Find(r => r.PlayerId == match.PlayerBId);
-      if (playerBRating != null)
-      {
-        playerBRating.Score = playerBUpdatedRating.Score;
-        this._appContext.Ratings.Update(playerBRating);
-      }
-      else
-      {
-        this._appContext.Ratings.Add(playerBUpdatedRating);
-      }
-
       try
       {
-        this._appContext.Add(match);
-        this._appContext.SaveChanges();
-        return CreatedAtRoute("GetMatch", new { id = match.Id }, match);
+        if (!ModelState.IsValid || payload == null)
+        {
+          return BadRequest("Unacceptable payload");
+        }
+
+        var validPayload = _matchesManager.ValidatePayload(payload);
+        if(validPayload)
+        {
+          var scoreImpact = await _matchesManager.RecordMultiPlayerGame(payload);
+          return (IActionResult) Accepted(scoreImpact);
+        }
+        return BadRequest(false);
       }
       catch (Exception e)
       {
-        return BadRequest();
+        Console.WriteLine(e);
+        throw;
       }
     }
   }

@@ -1,5 +1,11 @@
 trigger:
-- master
+  branches:
+    include:
+    - master
+    - development
+
+variables:
+  imageName: mvp-app
 
 pool:
   vmImage: 'Ubuntu-16.04'
