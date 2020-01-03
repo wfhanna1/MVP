@@ -105,17 +105,19 @@ namespace sclask.Managers
             float playerScoreImpact=0;
             var kFactor = _dbContext.Games.First(g => g.Id == payload.GameId).KFactor;
             var newScores = _matchService.CalculateNewEloScore(Convert.ToDecimal(winningTeamScore), Convert.ToDecimal(losingTeamScore), payload.GameId, kFactor);
+            float newWinningEloScore = float.Parse(newScores.WinningNewEloScore.ToString(),
+                CultureInfo.InvariantCulture.NumberFormat);
+            playerScoreImpact = newWinningEloScore - winningTeamScore;
             foreach (var player in winningTeam)
             {
-                var pointsDifference = Math.Abs(float.Parse(newScores.WinningNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat) - player.Score);
-                player.Score += pointsDifference;
+                //var pointsDifference = Math.Abs(float.Parse(newScores.WinningNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat) - player.Score);
+                player.Score += playerScoreImpact;
                 player.LastUpdateDate = DateTime.Now;
-                playerScoreImpact = pointsDifference;
             }
             foreach (var player in losingTeam)
             {
-                var pointsDifference = Math.Abs(player.Score - float.Parse(newScores.LosingNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat));
-                player.Score -= pointsDifference;
+                //var pointsDifference = Math.Abs(player.Score - float.Parse(newScores.LosingNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat));
+                player.Score -= playerScoreImpact;
                 player.LastUpdateDate = DateTime.Now;
             }
             
