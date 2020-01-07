@@ -41,7 +41,7 @@ namespace sclask.Controllers
           }
         )
         .OrderByDescending(g => g.Average)
-        .Take(10)
+        .Take(20)
         .ToList();
 
       return Ok(ratings);
