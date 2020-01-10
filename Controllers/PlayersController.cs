@@ -82,10 +82,15 @@ namespace sclask.Controllers
         return BadRequest();
       }
 
-      this._appContext.Add(player);
-      this._appContext.SaveChanges();
+      var playerExists = _appContext.Players.Where(p => p.EmailAddress == player.EmailAddress).FirstOrDefault();
+      if (playerExists == null)
+      {
+        _appContext.Add(player);
+        _appContext.SaveChanges();
+        return CreatedAtRoute("GetPlayer", new { id = player.Id }, player);
+      }
 
-      return CreatedAtRoute("GetPlayer", new { id = player.Id }, player);
+      return BadRequest("Player already exists");
     }
   }
 }
