@@ -81,10 +81,12 @@ namespace sclask.Controllers
       {
         return BadRequest();
       }
-
-      var playerExists = _appContext.Players.Where(p => p.EmailAddress == player.EmailAddress).FirstOrDefault();
+      
+      var emailLowerCase = player?.EmailAddress?.ToLower();
+      var playerExists = _appContext.Players.FirstOrDefault(p => p.EmailAddress.ToLower() == emailLowerCase);
       if (playerExists == null)
       {
+        player.EmailAddress = emailLowerCase;
         _appContext.Add(player);
         _appContext.SaveChanges();
         return CreatedAtRoute("GetPlayer", new { id = player.Id }, player);
