@@ -51,7 +51,7 @@ namespace sclask.Managers
             _dbContext.Matches.Add(match);
             _dbContext.SaveChanges();
 
-            var multiPlayerTable = new List<MultiPlayerMatch>();
+            var multiPlayerList = new List<MultiPlayerMatch>();
       
             foreach (var player in payload.Players)
             {
@@ -78,10 +78,11 @@ namespace sclask.Managers
                 {
                     MatchId = match.Id,
                     PlayerId = player.PlayerId,
-                    IsWinner = player.IsWinner
+                    IsWinner = player.IsWinner,
+                    PlayerRating = currentPlayer.Score
                 };
                 multiPlayObject.LastUpdateDate = DateTime.Now;
-                multiPlayerTable.Add(multiPlayObject);
+                multiPlayerList.Add(multiPlayObject);
             }
             
             //Average team score
@@ -120,10 +121,12 @@ namespace sclask.Managers
                 player.Score -= playerScoreImpact;
                 player.LastUpdateDate = DateTime.Now;
             }
-            
+
+            multiPlayerList.ForEach(player => player.PointsImpact = playerScoreImpact);
+
             _dbContext.Ratings.UpdateRange(winningTeam);
             _dbContext.Ratings.UpdateRange(losingTeam);
-            await _dbContext.MultiPlayerMatches.AddRangeAsync(multiPlayerTable);
+            await _dbContext.MultiPlayerMatches.AddRangeAsync(multiPlayerList);
             await _dbContext.SaveChangesAsync();
             return (int) Math.Round(playerScoreImpact); 
         }
