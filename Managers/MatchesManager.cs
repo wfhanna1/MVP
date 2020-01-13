@@ -51,7 +51,7 @@ namespace sclask.Managers
             _dbContext.Matches.Add(match);
             _dbContext.SaveChanges();
 
-            var multiPlayerTable = new List<MultiPlayerMatch>();
+            var multiPlayerList = new List<MultiPlayerMatch>();
       
             foreach (var player in payload.Players)
             {
@@ -81,7 +81,7 @@ namespace sclask.Managers
                     IsWinner = player.IsWinner
                 };
                 multiPlayObject.LastUpdateDate = DateTime.Now;
-                multiPlayerTable.Add(multiPlayObject);
+                multiPlayerList.Add(multiPlayObject);
             }
             
             //Average team score
@@ -110,20 +110,24 @@ namespace sclask.Managers
             playerScoreImpact = newWinningEloScore - winningTeamScore;
             foreach (var player in winningTeam)
             {
-                //var pointsDifference = Math.Abs(float.Parse(newScores.WinningNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat) - player.Score);
                 player.Score += playerScoreImpact;
                 player.LastUpdateDate = DateTime.Now;
+                var listPlayer = multiPlayerList.First(p => p.PlayerId == player.Id);
+                listPlayer.PlayerRating = player.Score;
+                listPlayer.PointsImpact = playerScoreImpact;
             }
             foreach (var player in losingTeam)
             {
-                //var pointsDifference = Math.Abs(player.Score - float.Parse(newScores.LosingNewEloScore.ToString(), CultureInfo.InvariantCulture.NumberFormat));
                 player.Score -= playerScoreImpact;
                 player.LastUpdateDate = DateTime.Now;
+                var listPlayer = multiPlayerList.First(p => p.PlayerId == player.Id);
+                listPlayer.PlayerRating = player.Score;
+                listPlayer.PointsImpact = playerScoreImpact;
             }
-            
+
             _dbContext.Ratings.UpdateRange(winningTeam);
             _dbContext.Ratings.UpdateRange(losingTeam);
-            await _dbContext.MultiPlayerMatches.AddRangeAsync(multiPlayerTable);
+            await _dbContext.MultiPlayerMatches.AddRangeAsync(multiPlayerList);
             await _dbContext.SaveChangesAsync();
             return (int) Math.Round(playerScoreImpact); 
         }
@@ -145,7 +149,9 @@ namespace sclask.Managers
                         {
                             PlayerId = multimatches.PlayerId,
                             FullName = multimatches.Player.FullName,
-                            IsWinner = multimatches.IsWinner
+                            IsWinner = multimatches.IsWinner,
+                            Score = multimatches.PlayerRating,
+                            PointsImpacted = Convert.ToInt32(multimatches.PointsImpact)
                         }).ToList()
                 })
                 .Take(10);

@@ -19,7 +19,11 @@ namespace sclask.Models
         public int PlayerId { get; set; }
         
         public bool IsWinner { get; set; }
-        
+
+        public float PlayerRating { get; set; }
+
+        public float PointsImpact { get; set; }
+
         public Match Match { get; set; }
         
         public Player Player { get; set; }

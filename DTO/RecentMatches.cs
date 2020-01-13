@@ -17,5 +17,7 @@ namespace sclask.DTO
         public int PlayerId { get; set; }
         public string FullName { get; set; }
         public bool IsWinner { get; set; }
+        public float Score { get; set; }
+        public int PointsImpacted { get; set; }
     }
 }
