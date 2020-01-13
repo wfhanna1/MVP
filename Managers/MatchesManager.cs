@@ -112,7 +112,7 @@ namespace sclask.Managers
             {
                 player.Score += playerScoreImpact;
                 player.LastUpdateDate = DateTime.Now;
-                var listPlayer = multiPlayerList.First(p => p.PlayerId == player.Id);
+                var listPlayer = multiPlayerList.First(p => p.PlayerId == player.PlayerId);
                 listPlayer.PlayerRating = player.Score;
                 listPlayer.PointsImpact = playerScoreImpact;
             }
@@ -120,7 +120,7 @@ namespace sclask.Managers
             {
                 player.Score -= playerScoreImpact;
                 player.LastUpdateDate = DateTime.Now;
-                var listPlayer = multiPlayerList.First(p => p.PlayerId == player.Id);
+                var listPlayer = multiPlayerList.First(p => p.PlayerId == player.PlayerId);
                 listPlayer.PlayerRating = player.Score;
                 listPlayer.PointsImpact = playerScoreImpact;
             }
