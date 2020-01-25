@@ -46,6 +46,28 @@ namespace sclask.Controllers
 
       return Ok(ratings);
     }
+    
+    [HttpGet("bottomPlayers")]
+    public ActionResult<ICollection<Rating>> BottomRatingsByPlayer()
+    {
+      var ratings = this._appContext.Ratings
+        .Include(r => r.Player)
+        .GroupBy(r => new { PlayerId = r.PlayerId })
+        .Select(
+          g => new
+          {
+            Average = g.Average(p => p.Score),
+            Id = g.Key.PlayerId,
+            Player = g.Select(p => p.Player),
+            Games = _appContext.MultiPlayerMatches.Count(t => t.PlayerId == g.Key.PlayerId)
+          }
+        )
+        .OrderBy(g => g.Average)
+        .Take(10)
+        .ToList();
+
+      return Ok(ratings);
+    }
 
     [HttpGet("{id}", Name = "GetRating")]
     public ActionResult<Rating> GetRating(int id)
