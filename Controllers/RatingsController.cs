@@ -40,7 +40,9 @@ namespace sclask.Controllers
             Games = _appContext.MultiPlayerMatches.Count(t => t.PlayerId == g.Key.PlayerId)
           }
         )
-        .OrderByDescending(g => g.Average)
+        .OrderBy(q => q.Games)
+        .SkipWhile(q => q.Games < 10)
+        .OrderByDescending(q => q.Average)
         .Take(20)
         .ToList();
 
